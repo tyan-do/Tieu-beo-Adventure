@@ -1,66 +1,67 @@
 // --- HỆ THỐNG CỐT TRUYỆN MỞ ĐẦU (12 CẢNH + CHẠY CHỮ + NEXT / SKIP) ---
-const STORY_IMG_DIRS = ["tiêu béo adventure", ".", "story", "images", "img", "assets"];
+const STORY_IMG_DIRS = [".", "tiêu béo adventure", "story", "images", "img", "assets"];
+const STORY_IMG_EXTS = [".jpg", ".png", ".jpeg", ".webp", ".gif"];
 const STORY_TYPEWRITER_SPEED_MS = 22;
 
 const STORY_SLIDES = [
     {
         index: 1,
-        stems: ["story1", "1", "01", "story_1", "story 1", "1 - tieu beo", "1 - tiêu béo"],
+        stems: ["story1", "story_1", "story 1", "1", "01", "1 - tieu beo", "1 - tiêu béo"],
         text: "Đây là Tiêu Béo — hoàng tử tôn quý của Vương Quốc Mèo. Trước khi bước vào cuộc đại chiến mèo xuyên không định mệnh, cậu được cử tới thế giới loài người để rèn luyện và trải nghiệm cuộc sống đầy phức tạp nơi đây."
     },
     {
         index: 2,
-        stems: ["story2", "2", "02", "story_2", "story 2"],
+        stems: ["story2", "story_2", "story 2", "2", "02"],
         text: "Sống ở thế giới loài người một thời gian, mọi thứ êm đềm hơn Tiêu tưởng rất nhiều. Nhờ tài tích trữ điêu luyện, cậu đã gom được cả một kho báu Pate và hạt, chỉ mong những ngày tháng ăn no ngủ kỹ thế này kéo dài mãi mãi."
     },
     {
         index: 3,
-        stems: ["story3", "3", "03", "story_3", "story 3"],
+        stems: ["story3", "story_3", "story 3", "3", "03"],
         text: "Thỉnh thoảng Tiêu vẫn nghe phong phanh về loài Chuột — lũ sinh vật ranh ma chuyên phá hoại thế giới loài người và là kẻ thù truyền kiếp của tộc Mèo. Nhưng chưa tận mắt chạm trán bao giờ nên cậu chẳng mấy bận tâm, ngày ngày chỉ việc đánh chén no nê rồi cuộn tròn đánh một giấc."
     },
     {
         index: 4,
-        stems: ["story4", "4", "04", "story_4", "story 4"],
+        stems: ["story4", "story_4", "story 4", "4", "04"],
         text: "Tiêu đâu ngờ rằng, ngay sau giấc ngủ tưởng chừng bình yên như mọi hôm này, vận mệnh của cậu sắp rẽ sang một cuộc chiến không khoan nhượng..."
     },
     {
         index: 5,
-        stems: ["story5", "5", "05", "story_5", "story 5"],
+        stems: ["story5", "story_5", "story 5", "5", "05"],
         text: "Vừa mở mắt tỉnh dậy, Tiêu Béo chết lặng. Toàn bộ kho báu Pate cùng đống lương thực tích cóp bấy lâu đã bốc hơi sạch sành sanh, không còn lấy một mẩu vụn!"
     },
     {
         index: 6,
-        stems: ["story6", "6", "06", "story_6", "story 6"],
+        stems: ["story6", "story_6", "story 6", "6", "06"],
         text: "Không tin vào mắt mình, vị hoàng tử vội vã rảo bước sục sạo khắp căn nhà, lùng sục từ gầm bàn tới từng góc phòng với tia hy vọng mong manh."
     },
     {
         index: 7,
-        stems: ["story7", "7", "07", "story_7", "story 7"],
-        text: "Tiêu thậm chí còn chui vào tận khe chân quạt và những ngóc ngách kín nhất, wondering không biết có phải đám loài người ở đây đã lén \"ăn nhầm\" mất phần của mình hay không."
+        stems: ["story7", "story_7", "story 7", "7", "07"],
+        text: "Tiêu thậm chí còn chui vào tận khe chân quạt và những ngóc ngách kín nhất, thầm tự hỏi không biết có phải đám loài người ở đây đã lén \"ăn nhầm\" mất phần của mình hay không."
     },
     {
         index: 8,
-        stems: ["story8", "8", "08", "story_8", "story 8"],
+        stems: ["story8", "story_8", "story 8", "8", "08"],
         text: "Đang lúc rối bời giữa căn phòng trống trơn, ánh mắt của Tiêu bất ngờ khựng lại trước một dấu vết kỳ lạ in hằn trên nền gạch..."
     },
     {
         index: 9,
-        stems: ["story9", "9", "09", "story_9", "story 9"],
+        stems: ["story9", "story_9", "story 9", "9", "09"],
         text: "Đó chính là dấu ấn ký khét tiếng của Chụt Béo Ị — một tên thủ lĩnh cấp cao của Vương Quốc Chuột mà Tiêu từng nghe danh. Vì thói tham lam vô độ, chuyên cướp bóc và nuốt chửng mọi thứ trên đời mà hắn phình to thành bộ dạng béo ị, xấu xí."
     },
     {
         index: 10,
-        stems: ["story10", "10", "story_10", "story 10"],
+        stems: ["story10", "story_10", "story 10", "10"],
         text: "Để lại dấu ấn ngay tại hiện trường chẳng khác nào một lời khiêu chiến thẳng vào lòng tự tôn của hoàng tử Vương Quốc Mèo. Tiêu Béo ngẩng cao đầu, hạ quyết tâm sẽ đích thân lên đường trừng trị lũ chuột xấc xược này và đòi lại từng gói Pate!"
     },
     {
         index: 11,
-        stems: ["story11", "11", "story_11", "story 11"],
+        stems: ["story11", "story_11", "story 11", "11"],
         text: "Với sự tính toán sắc bén của một hoàng tử, Tiêu Béo hiểu rõ nếu đơn phương độc mã sẽ khó lòng xoay xở trước bầy chuột vừa đông đảo vừa hung hãn. Cậu bắt đầu tìm gặp và kết nối với các đồng minh mèo khác ở thế giới loài người để lập thành liên minh."
     },
     {
         index: 12,
-        stems: ["story12", "12", "story_12", "story 12"],
+        stems: ["story12", "story_12", "story 12", "12"],
         text: "Hóa ra các đồng minh ở thế giới loài người cũng từng bị lũ chuột cuỗm sạch thức ăn, nhưng chưa ai dám đứng lên đòi lại công bằng. Nhìn cảnh anh em đồng loại chịu thiệt, lòng tự tôn của hoàng tử Mèo bùng lên dữ dội: Tiêu Béo thề sẽ bắt từng con chuột một nôn ra hết số Pate đã cướp, chính thức mở màn cuộc chiến đòi lại công bằng!"
     }
 ];
@@ -69,6 +70,27 @@ let storyCurrentIndex = 0;
 let storyTypewriterTimer = null;
 let storyIsTyping = false;
 let storyCompletedIntro = false;
+const preloadedStoryCache = new Set();
+
+function preloadStorySlide(idx) {
+    if (idx < 0 || idx >= STORY_SLIDES.length) return;
+    const slide = STORY_SLIDES[idx];
+    const candidates = buildAssetCandidates(STORY_IMG_DIRS, slide.stems, STORY_IMG_EXTS);
+    if (!candidates.length) return;
+
+    const primaryUrl = candidates[0];
+    if (preloadedStoryCache.has(primaryUrl)) return;
+    preloadedStoryCache.add(primaryUrl);
+
+    const img = new Image();
+    img.src = primaryUrl;
+}
+
+function preloadUpcomingStorySlides(fromIdx) {
+    preloadStorySlide(fromIdx);
+    preloadStorySlide(fromIdx + 1);
+    preloadStorySlide(fromIdx + 2);
+}
 
 function stopStoryTypewriter() {
     if (storyTypewriterTimer) {
@@ -104,6 +126,7 @@ function renderStorySlide(idx) {
     const slide = STORY_SLIDES[safeIdx];
 
     stopStoryTypewriter();
+    preloadUpcomingStorySlides(safeIdx);
 
     const counterEl = document.getElementById("story-step-counter");
     const speakerEl = document.getElementById("story-speaker-tag");
@@ -126,7 +149,7 @@ function renderStorySlide(idx) {
         const candidates = buildAssetCandidates(
             STORY_IMG_DIRS,
             slide.stems,
-            [".png", ".jpg", ".jpeg", ".webp", ".gif"]
+            STORY_IMG_EXTS
         );
 
         let cIdx = 0;
@@ -224,6 +247,7 @@ function openStoryIntro() {
     if (storyScreen) storyScreen.style.display = "flex";
 
     currentScreen = "story";
+    preloadUpcomingStorySlides(0);
     renderStorySlide(0);
 }
 
