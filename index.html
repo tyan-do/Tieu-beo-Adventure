@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiêu Béo Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url('desktop.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            font-family: 'VT323', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(3px);
+            z-index: 0;
+        }
+
+        button, input, select {
+            font-family: 'VT323', monospace;
+        }
+
+        /* --- MÀN HÌNH CỐT TRUYỆN MỞ ĐẦU TRƯỚC KHI VÀO HUB --- */
+        .story-container {
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 320 / 180;
+            background: #090d16;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-top-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 25;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .story-step-badge {
+            background: rgba(15, 23, 42, 0.88);
+            color: #fde047;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .story-ctrl-btn {
+            background: rgba(15, 23, 42, 0.92);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 6px;
+            padding: 3px 12px;
+            font-family: 'VT323', monospace;
+            font-size: 21px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.55);
+            transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+        }
+
+        .story-ctrl-btn:hover {
+            transform: translateY(-1px) scale(1.04);
+            background: #fde047;
+            color: #0f172a;
+        }
+
+        .story-ctrl-btn.story-skip-btn {
+            background: rgba(127, 29, 29, 0.9);
+            border-color: #fca5a5;
+            color: #fef2f2;
+        }
+
+        .story-ctrl-btn.story-skip-btn:hover {
+            background: #e94560;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .story-image-stage {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .story-image-fallback {
+            color: #94a3b8;
+            font-size: 26px;
+            text-align: center;
+            padding: 16px;
+        }
+
+        .story-dialogue-box {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 22;
+            min-height: 92px;
+            background: rgba(15, 23, 42, 0.25);
+            border: 1px solid rgba(253, 224, 71, 0.6);
+            border-radius: 8px;
+            padding: 8px 14px 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .story-speaker-tag {
+            display: inline-block;
+            color: #fde047;
+            font-size: 20px;
+            letter-spacing: 0.6px;
+            margin-bottom: 3px;
+        }
+
+        .story-typewriter-text {
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            line-height: 1.25;
+            color: #f8fafc;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 0 #000000;
+        }
+
+        .story-hint-text {
+            margin-top: 4px;
+            font-size: 17px;
+            color: #94a3b8;
+            text-align: right;
+        }
+
+        .hub-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 320 / 180;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #ffffff;
+        }
+
+        .hub-bg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .cloud-gif {
+            position: absolute;
+            top: 23%;
+            left: 33.5%;
+            width: 7.5%;
+            z-index: 2;
+            image-rendering: pixelated;
+            transform: rotate(-11deg);
+        }
+
+        .cat-gif {
+            position: absolute;
+            top: 70%;
+            left: 57%;
+            width: 12%;
+            z-index: 3;
+            image-rendering: pixelated;
+        }
+
+        .fire-gif {
+            position: absolute;
+            top: 53%;
+            left: 73%;
+            width: 20%;
+            z-index: 4;
+            image-rendering: pixelated;
+        }
+
+        /* Thanh Vàng & Pate góc trên trái */
+        .hub-top-resources {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(248, 250, 252, 0.94);
+            color: #0f172a;
+            border: 2px solid #1e293b;
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-family: 'VT323', monospace;
+            font-size: 26px;
+            line-height: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+        }
+
+        .hub-res-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hub-res-item img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        /* 3 nút chức năng bên trái: mèo / trang bị / shop */
+        .hub-side-menu {
+            position: absolute;
+            top: 76px;
+            left: 14px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hub-icon-btn {
+            width: 76px;
+            padding: 7px 6px 6px;
+            background: rgba(248, 250, 252, 0.94);
+            color: #0f172a;
+            border: 2px solid #1e293b;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            line-height: 1.05;
+            letter-spacing: 0.4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.15s, background 0.15s;
+        }
+
+        .hub-icon-btn:hover {
+            transform: scale(1.05);
+            background: #ffffff;
+        }
+
+        .hub-icon-btn img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .play-btn {
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e94560;
+            color: white;
+            border: 2px solid #fff;
+            padding: 6px 28px;
+            font-family: 'VT323', monospace;
+            font-size: clamp(24px, 3vw, 34px);
+            letter-spacing: 1.5px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: background 0.2s, transform 0.2s;
+            z-index: 10;
+        }
+
+        .play-btn:hover {
+            background: #d63851;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .game-screen {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .map-bg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .player-stats-hud {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            background: rgba(0, 0, 0, 0.78);
+            border: 1px solid #ffffff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .exp-hud {
+            position: absolute;
+            top: 48px;
+            right: 12px;
+            z-index: 10;
+            width: 245px;
+            background: rgba(0, 0, 0, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 6px;
+            padding: 5px 9px;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+        }
+
+        .exp-hud-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: #fde047;
+        }
+
+        .exp-bar-track {
+            width: 100%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .exp-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #4ade80);
+            transition: width 0.25s ease;
+        }
+
+        .player-unit {
+            position: absolute;
+            bottom: 14%;
+            left: 35%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .player-name {
+            font-family: 'VT323', monospace;
+            font-size: 28px;
+            color: #fff3b0;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            text-shadow:
+                -2px -2px 0 #1a1a2e,
+                 2px -2px 0 #1a1a2e,
+                -2px  2px 0 #1a1a2e,
+                 2px  2px 0 #1a1a2e,
+                 0px  3px 0 #000;
+        }
+
+        .player-sprite {
+            width: 90px;
+            height: auto;
+            image-rendering: pixelated;
+            mix-blend-mode: lighten;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+        }
+
+        #gacha-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            width: 660px;
+            max-width: 94vw;
+            max-height: 86vh;
+            overflow-y: auto;
+            background: #141824;
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+        }
+
+        #gacha-modal h3, #gacha-modal h4 {
+            font-family: 'VT323', monospace;
+            letter-spacing: 0.6px;
+            margin: 8px 0;
+        }
+
+        #gacha-modal button {
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .gacha-actions, .salvage-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        #gacha-result-list, #inventory-list, #char-result-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .char-group-block {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .char-group-header {
+            font-size: 20px;
+            color: #fde047;
+            margin-bottom: 6px;
+        }
+
+        .char-group-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .char-group-row .weapon-card {
+            flex: 1 1 220px;
+            max-width: 100%;
+        }
+
+        .weapon-card {
+            background: #1f2638;
+            border: 1px solid #39435e;
+            border-radius: 6px;
+            padding: 8px;
+            font-family: 'VT323', monospace;
+            font-size: 19px;
+            line-height: 1.25;
+        }
+
+        .enemy-unit {
+            position: absolute;
+            bottom: 16%;
+            left: 75%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            text-align: center;
+        }
+
+        .enemy-box {
+            width: 64px;
+            height: 64px;
+            background: rgba(20, 83, 45, 0.85);
+            border: 2px solid #4ade80;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .combat-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            max-width: 96%;
+            background: rgba(0, 0, 0, 0.82);
+            padding: 7px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+        }
+
+        #equipped-label {
+            max-width: 320px;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            line-height: 1.15;
+            font-size: 20px;
+        }
+
+        .combat-bar button {
+            flex-shrink: 0;
+            font-family: 'VT323', monospace;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        #levelup-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 950;
+            background: rgba(5, 8, 18, 0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            font-family: 'VT323', monospace;
+        }
+
+        .levelup-box {
+            width: 680px;
+            max-width: 95vw;
+            background: #141824;
+            border: 2px solid #fde047;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.92);
+        }
+
+        .levelup-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .levelup-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upgrade-card {
+            background: #1e263b;
+            border: 2px solid #475569;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .upgrade-card button {
+            font-family: 'VT323', monospace;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        #stat-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+            width: 500px;
+            max-width: 92vw;
+            max-height: 84vh;
+            overflow-y: auto;
+            background: #141824;
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-section-title {
+            color: #fde047;
+            font-size: 22px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        .element-chart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            font-size: 18px;
+        }
+
+        .element-chart-table th,
+        .element-chart-table td {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            padding: 5px 7px;
+            text-align: left;
+        }
+
+        .element-chart-table th {
+            background: rgba(255, 255, 255, 0.08);
+            color: #93c5fd;
+        }
+
+        .floating-dmg {
+            position: absolute;
+            left: 75%;
+            bottom: 32%;
+            transform: translateX(-50%);
+            z-index: 20;
+            pointer-events: none;
+            font-family: 'VT323', monospace;
+            font-size: 26px;
+            font-weight: bold;
+            white-space: nowrap;
+            text-shadow:
+                -2px -2px 0 #000,
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000;
+            animation: floatUpFade 0.85s ease-out forwards;
+        }
+
+        .floating-dmg.crit {
+            font-size: 32px;
+            color: #facc15;
+        }
+
+        .floating-dmg.normal {
+            color: #ffffff;
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(0.9); }
+            30% { opacity: 1; transform: translate(-50%, -14px) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -44px) scale(1); }
+        }
+
+        .enemy-hit {
+            animation: enemyShake 0.2s linear;
+        }
+
+        @keyframes enemyShake {
+            0%, 100% { transform: translateX(-50%); }
+            33% { transform: translateX(calc(-50% - 6px)); }
+            66% { transform: translateX(calc(-50% + 6px)); }
+        }
+
+        .floating-dmg.player-hurt {
+            left: 35%;
+            bottom: 28%;
+            color: #ff4d6d;
+        }
+
+        .player-hit {
+            animation: playerShake 0.22s linear;
+        }
+
+        @keyframes playerShake {
+            0%, 100% { transform: translateX(-50%); filter: brightness(1); }
+            33% { transform: translateX(calc(-50% - 6px)); filter: brightness(1.8) sepia(0.6) hue-rotate(-30deg); }
+            66% { transform: translateX(calc(-50% + 6px)); filter: brightness(1.8) sepia(0.6) hue-rotate(-30deg); }
+        }
+
+        .screen-hurt {
+            animation: screenFlashRed 0.25s ease-out;
+        }
+
+        @keyframes screenFlashRed {
+            0% { box-shadow: inset 0 0 0 6px rgba(239, 68, 68, 0.75), 0 15px 40px rgba(0, 0, 0, 0.8); }
+            100% { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0), 0 15px 40px rgba(0, 0, 0, 0.8); }
+        }
+
+        /* --- GIAO DIỆN KHO MÈO CHIA ĐÔI + TAI MÈO + TIÊU NẰM --- */
+        .cat-dex-shell {
+            position: relative;
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: 1.35fr 0.95fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .cat-dex-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cat-left-panel {
+            position: relative;
+            background: #1a2133;
+            border: 2px solid #94a3b8;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .cat-left-panel::before,
+        .cat-left-panel::after {
+            content: "";
+            position: absolute;
+            top: -16px;
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-bottom: 16px solid #94a3b8;
+            pointer-events: none;
+        }
+
+        .cat-left-panel::before {
+            left: 20px;
+            transform: rotate(-10deg);
+        }
+
+        .cat-left-panel::after {
+            left: 44px;
+            transform: rotate(12deg);
+        }
+
+        .cat-search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .cat-search-input {
+            flex: 1;
+            background: #0f172a;
+            color: #f8fafc;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 20px;
+            outline: none;
+        }
+
+        .cat-search-input:focus {
+            border-color: #fde047;
+        }
+
+        .cat-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .cat-filter-select {
+            background: #0f172a;
+            color: #fde047;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 18px;
+        }
+
+        .cat-grid-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+            gap: 8px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .cat-mini-card {
+            position: relative;
+            background: #141927;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            padding: 7px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.12s, border-color 0.12s;
+        }
+
+        .cat-mini-card:hover {
+            transform: translateY(-2px);
+            border-color: #94a3b8;
+        }
+
+        .cat-mini-card.selected {
+            border-color: #fde047;
+            background: #1e293b;
+        }
+
+        .cat-mini-card img {
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            display: block;
+            margin: 0 auto 4px;
+        }
+
+        .cat-badge-active {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: #16a34a;
+            color: #fff;
+            font-size: 14px;
+            padding: 0 5px;
+            border-radius: 4px;
+        }
+
+        .cat-badge-merge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #eab308;
+            color: #0f172a;
+            font-size: 14px;
+            padding: 0 5px;
+            border-radius: 4px;
+        }
+
+        .cat-right-panel {
+            position: relative;
+            background: #1a2133;
+            border: 2px solid #94a3b8;
+            border-radius: 12px;
+            padding: 14px 12px 12px;
+            margin-top: 0;
+        }
+
+        .cat-detail-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .cat-detail-actions button {
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .cat-detail-actions button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .tieu-bottom-dock {
+            position: relative;
+            margin-top: 16px;
+            padding-top: 42px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tieu-speech-bubble {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            max-width: 260px;
+            width: max-content;
+            background: rgba(15, 23, 42, 0.96);
+            color: #fde047;
+            border: 2px solid #fde047;
+            border-radius: 10px;
+            padding: 4px 10px;
+            font-size: 17px;
+            line-height: 1.2;
+            text-align: center;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+            pointer-events: none;
+            animation: popBubble 0.16s ease-out;
+        }
+
+        .tieu-speech-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #fde047;
+        }
+
+        @keyframes popBubble {
+            0% { opacity: 0; transform: translate(-50%, 6px) scale(0.95); }
+            100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+
+        .sleeping-tieu-top {
+            width: 126px;
+            height: auto;
+            cursor: pointer;
+            mix-blend-mode: screen;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.65));
+            transition: transform 0.15s ease;
+        }
+
+        .sleeping-tieu-top:hover {
+            transform: scale(1.06) rotate(-2deg);
+        }
+
+        .cat-detail-portrait {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #111624;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .cat-detail-portrait img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        /* --- QUÁI KHÔNG KHUNG, CHỈ HIỆN ẢNH + TÊN; BẤM MỚI HIỆN CHI TIẾT --- */
+        .enemy-clean-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.14s ease, filter 0.14s ease;
+        }
+
+        .enemy-clean-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .enemy-clean-card.is-selected .enemy-clean-sprite-wrap {
+            filter: drop-shadow(0 0 8px rgba(253, 224, 71, 0.95));
+        }
+
+        .enemy-clean-sprite-wrap {
+            width: 170px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .enemy-clean-sprite-wrap img {
+            width: 170px;
+            height: auto;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .enemy-clean-name {
+            margin-top: 2px;
+            font-family: 'VT323', monospace;
+            font-size: 21px;
+            line-height: 1.05;
+            white-space: nowrap;
+            text-shadow:
+                -2px -2px 0 #000,
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000,
+                 0px  3px 0 #000;
+        }
+
+        #enemy-detail-popup {
+            position: absolute;
+            top: 86px;
+            right: 12px;
+            z-index: 25;
+            width: 255px;
+            max-width: calc(100% - 24px);
+            background: rgba(15, 23, 42, 0.94);
+            border: 2px solid #fde047;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: 'VT323', monospace;
+            font-size: 19px;
+            line-height: 1.25;
+            color: #f8fafc;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75);
+        }
+
+        #top-stage-banner {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 12;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            line-height: 1.1;
+            color: #fde047;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 4px 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+            text-shadow:
+                -2px -2px 0 #000,
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Màn hình cốt truyện mở đầu trước khi vào Hub -->
+    <div class="story-container" id="story-screen">
+        <div class="story-top-controls">
+            <span class="story-step-badge" id="story-step-counter">1 / 12</span>
+            <button class="story-ctrl-btn" id="story-next-btn" onclick="handleStoryNextClick()">Next ▶</button>
+            <button class="story-ctrl-btn story-skip-btn" id="story-skip-btn" onclick="finishStoryIntro()">Skip ⏭</button>
+        </div>
+
+        <div class="story-image-stage">
+            <img id="story-image" class="story-image" alt="">
+            <div id="story-image-fallback" class="story-image-fallback" style="display:none;"></div>
+        </div>
+
+        <div class="story-dialogue-box" id="story-dialogue-box" onclick="handleStoryDialogueClick()">
+            <div class="story-speaker-tag" id="story-speaker-tag">CỐT TRUYỆN · PHẦN 1</div>
+            <div class="story-typewriter-text" id="story-text"></div>
+            <div class="story-hint-text" id="story-hint">Đang chạy chữ... (Bấm để hiện nhanh)</div>
+        </div>
+    </div>
+
+    <div class="hub-container" id="hub-screen" style="display: none;">
+        <img src="room.png" alt="" class="hub-bg">
+        <img src="cloud.gif" alt="" class="cloud-gif">
+        <img src="tieu.png" alt="" class="cat-gif">
+        <img src="fire.gif" alt="" class="fire-gif">
+
+        <!-- Thanh Vàng & Pate góc trên trái -->
+        <div class="hub-top-resources">
+            <span class="hub-res-item">
+                <img id="icon-gold" data-icon-stem="vàng_2" alt="">
+                <strong id="hub-gold">2000</strong>
+            </span>
+            <span class="hub-res-item">
+                <img id="icon-pate" data-icon-stem="pate_2" alt="">
+                <strong id="hub-pate">20</strong>
+            </span>
+        </div>
+
+        <!-- 3 nút icon bên trái: mèo / trang bị / shop -->
+        <div class="hub-side-menu">
+            <button class="hub-icon-btn" onclick="openHubModalSection('char')">
+                <img id="icon-cat" data-icon-stem="mèo_2" alt="">
+                <span>mèo</span>
+            </button>
+            <button class="hub-icon-btn" onclick="openHubModalSection('weapon')">
+                <img id="icon-equip" data-icon-stem="trang bị_2" alt="">
+                <span>trang bị</span>
+            </button>
+            <button class="hub-icon-btn" onclick="openHubModalSection('shop')">
+                <img id="icon-shop" data-icon-stem="shop_2" alt="">
+                <span>shop</span>
+            </button>
+        </div>
+
+        <button class="play-btn" onclick="startAdventure()">CHAN ĐÊ</button>
+    </div>
+
+    <div class="game-screen" id="game-screen" style="display: none;">
+        <img src="map1.jpg" alt="" class="map-bg">
+
+        <button class="back-btn" onclick="backToHub()">⬅ Hub</button>
+        <div id="top-stage-banner"></div>
+
+        <div class="player-stats-hud" id="player-stats-hud">
+            HP: <span id="player-hp">105</span>/<span id="player-max-hp">105</span> |
+            🛡️ DEF: <span id="player-def">4</span> |
+            ⚔️ ATK: <span id="player-atk">12</span>
+        </div>
+
+        <div class="exp-hud" id="exp-hud">
+            <div class="exp-hud-header">
+                <span id="player-level-text">Lv.1</span>
+                <span id="player-exp-text">EXP: 0 / 100</span>
+            </div>
+            <div class="exp-bar-track">
+                <div class="exp-bar-fill" id="player-exp-fill"></div>
+            </div>
+        </div>
+
+        <div class="player-unit" id="player-unit">
+            <div class="player-name" id="player-unit-name">Tiêu Béo [Hỏa] ★1</div>
+            <img src="tieu.png" alt="" class="player-sprite">
+        </div>
+
+        <div class="enemy-unit" id="enemy-unit">
+            <div id="enemy-info">Cây Bụi Gai [Thảo] | HP: <span id="enemy-hp">100</span>/100</div>
+            <div id="enemy-sub-stats" class="enemy-stats-sub">⚔️ ATK: 12 | 🛡️ DEF: 2</div>
+            <div class="enemy-box">🌿</div>
+        </div>
+        <div id="enemy-detail-popup" style="display:none;"></div>
+
+        <div class="combat-bar">
+            <span id="energy-text">Nộ: 0/4</span>
+            <button onclick="normalAttackTurn()">⚔️ Đánh thường</button>
+            <button id="ult-btn" onclick="ultimateAttackTurn()" disabled>💥 Nộ</button>
+            <button onclick="toggleStatModal(true)">📊 Stat</button>
+        </div>
+    </div>
+
+    <div id="levelup-modal">
+        <div class="levelup-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="margin:0;color:#fde047;font-size:26px;" id="levelup-title">⬆️ LÊN CẤP! CHỌN 1 TRONG 3 KỸ NĂNG</h3>
+                <span style="font-size:18px;color:#94a3b8;">Hiệu lực suốt chuyến đi</span>
+            </div>
+            <div class="levelup-cards-grid" id="levelup-cards-list"></div>
+        </div>
+    </div>
+
+    <div id="gacha-modal" style="display: none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <h3 style="margin:0;font-size:26px;">
+                <span id="gacha-modal-title">SHOP · TRANG BỊ · MÈO</span>
+                (Vàng: <span id="gacha-gold">2000</span> | Pate: <span id="gacha-pate">20</span>)
+            </h3>
+            <button onclick="toggleGachaModal(false)">Đóng</button>
+        </div>
+
+        <div id="shop-section">
+            <h4>Shop & Gacha</h4>
+            <div class="gacha-actions">
+                <button onclick="handleGacha(1)">Quay Vũ Khí 1x (100 Vàng)</button>
+                <button onclick="handleGacha(10)">Quay Vũ Khí 10x (900 Vàng)</button>
+                <button onclick="handleCharGacha(1)">Quay Mèo 1x (150 Vàng)</button>
+                <button onclick="handleCharGacha(10)">Quay Mèo 10x (1350 Vàng)</button>
+                <button onclick="buyPate(5, 150)">Mua 5 Pate (150 Vàng)</button>
+                <button onclick="addTestGold(10000)">+10k Vàng (Test)</button>
+            </div>
+            <div id="gacha-result-list"></div>
+            <div id="char-result-list"></div>
+        </div>
+
+        <div id="weapon-section">
+            <h4>Kho trang bị đã có</h4>
+            <div class="salvage-actions">
+                <button onclick="bulkSalvageWeapons(['thuong'])">♻️ Rã tất cả Thường</button>
+                <button onclick="bulkSalvageWeapons(['thuong', 'ngon'])">♻️ Rã Thường + Ngon</button>
+                <button onclick="bulkSalvageWeapons(['thuong', 'ngon', 'hiem'])">♻️ Rã Thường + Ngon + Hiếm</button>
+                <button onclick="bulkSalvageAllUnequipped()">♻️ Rã hết đồ chưa lắp</button>
+            </div>
+            <div id="inventory-list"></div>
+        </div>
+
+        <div id="char-section">
+            <div class="cat-dex-shell">
+                <div class="cat-left-panel">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <strong style="color:#fde047;font-size:22px;">MÈO ĐÃ CÓ</strong>
+                        <span id="cat-dex-count" style="color:#cbd5e1;font-size:18px;">0 / 26 loại</span>
+                    </div>
+
+                    <div class="cat-search-bar">
+                        <input
+                            type="text"
+                            id="cat-search-input"
+                            class="cat-search-input"
+                            placeholder="SEARCH tên mèo hoặc hệ..."
+                            oninput="renderCharInventory()"
+                        >
+                    </div>
+
+                    <div class="cat-filter-row">
+                        <select id="cat-element-filter" class="cat-filter-select" onchange="renderCharInventory()">
+                            <option value="all">Tất cả hệ</option>
+                            <option value="hoa">Hỏa</option>
+                            <option value="thuy">Thủy</option>
+                            <option value="thao">Thảo</option>
+                            <option value="dat">Đất</option>
+                            <option value="kim">Kim</option>
+                            <option value="loi">Lôi</option>
+                            <option value="phong">Phong</option>
+                            <option value="bang">Băng</option>
+                            <option value="anh_sang">Ánh sáng</option>
+                            <option value="bong_toi">Bóng tối</option>
+                        </select>
+
+                        <select id="cat-star-filter" class="cat-filter-select" onchange="renderCharInventory()">
+                            <option value="all">Mọi ★</option>
+                            <option value="5">★5</option>
+                            <option value="4">★4</option>
+                            <option value="3">★3</option>
+                            <option value="2">★2</option>
+                            <option value="1">★1</option>
+                        </select>
+
+                        <button onclick="resetCatFilters()" style="font-size:17px;padding:2px 8px;">Xóa lọc</button>
+                    </div>
+
+                    <div id="char-inventory-list" class="cat-grid-list"></div>
+                </div>
+
+                <div>
+                    <div class="cat-right-panel">
+                        <div id="char-detail-panel"></div>
+                    </div>
+
+                    <div class="tieu-bottom-dock">
+                        <div id="tieu-sleep-bubble" class="tieu-speech-bubble" style="display:none;"></div>
+                        <img
+                            id="sleeping-tieu-img"
+                            class="sleeping-tieu-top"
+                            onclick="pokeSleepingTieu()"
+                            title="Chọc Tiêu đang ngủ"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stat-modal" style="display: none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="margin:0;font-size:26px;">📊 BẢNG STAT CHI TIẾT</h3>
+            <button onclick="toggleStatModal(false)">Đóng</button>
+        </div>
+        <div id="stat-modal-content" style="margin-top:8px;"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
